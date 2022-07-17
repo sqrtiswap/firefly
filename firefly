@@ -1,0 +1,16 @@
+#!/bin/sh
+
+_timestamp=$(date +%F-%H%M%S)
+
+fetch_data() {
+	rsync -avzhP --delete -e ssh alexanderm@malcha.physik.fu-berlin.de:~/crosstalk/test /home/alexander/inbox/Hangar_SSH/"${_timestamp}"
+}
+
+send_data() {
+	cp -Rv ~/crosstalk/test ~/Cloud/fubox/masterarbeit/DataStaging/"${_timestamp}"
+}
+
+case $1 in
+	f*) fetch_data ;;
+	s*) send_data ;;
+esac
