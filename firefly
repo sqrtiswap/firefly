@@ -30,6 +30,13 @@ send_data() {
 	cp -Rv "${_source}" "${_destination}"
 }
 
+usage() { cat << USAGE
+${0##*/} - script for moving data between boxes.
+usage: ${0##*/} [-s] [-h] [-b hostname] source destination
+USAGE
+    exit 1
+}
+
 while getopts b:sh arg; do
     case ${arg} in
         b) _box="${OPTARG}" ;;
@@ -43,4 +50,5 @@ shift $((OPTIND -1))
 case $1 in
 	f*) fetch_data "$@" ;;
 	s*) send_data "$@" ;;
+    *) usage
 esac
