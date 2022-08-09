@@ -58,16 +58,45 @@ fetch_data() {
 	transfer_data
 }
 
-send_data() {
-	# send from outside the uni
-	[ -n "$2" ] \
-		&& _source="$2" \
-		|| _source="$HOME"/crosstalk/test
-	[ -n "$3" ] \
-		&& _destination="$3" \
-		|| _destination="$HOME"/Cloud/fubox/masterarbeit/DataStaging/"${_timestamp}"
+build_destination() {
+	_address="${user_name}@${_box}.physik.fu-berlin.de"
+	if [ "${_scratch}" -eq 1 ] ; then
+		_remote_basedir="${_address}:/local_scratch/${user_name}"
+	elif [ "${_home}" -eq 1 ] ; then
+		_remote_basedir="${_address}:/home/${user_name}"
+	else
+		_remote_basedir="${_address}:"
+	fi
+}
 
-	# send within the uni
+send_data() {
+	if hostname --fqdn | grep 'physik.fu-berlin.de' ; then
+		# within uni network
+		if [ "${_opt_box}" -eq 0 ] ; then
+			printf "%s\n\n" "Specify hostname of destination."
+			usage
+		else
+			build_destination
+		fi
+	else
+		# remotely
+		build_destination
+	fi
+
+	if [ -n "$2" ] ; then
+		_source="$2"
+	else
+		printf "%s\n\n" "Provide a source directory."
+		usage
+	fi
+
+	if [ -n "$3" ] ; then
+		_destination="${_remote_basedir}/$3"
+	else
+		_destination="${_address}:/home/${user_name}/Downloads/ssh_transfer_from_${_timestamp}"
+	fi
+
+	transfer_data
 }
 
 transfer_data() {
