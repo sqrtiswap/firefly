@@ -5,24 +5,66 @@ user_name='alexanderm'
 
 _scratch=0
 _home=0
+_opt_box=0
 
 _box=${_box:-${primary_box}}
 
 _timestamp=$(date +%F-%H%M%S)
 
+check_input() {
+	[ "${_scratch}" -eq 1 ] && [ "${_home}" -eq 1 ] \
+		&& printf "%s\n\n" "Decide between scratch and home." \
+		&& usage
+}
+
+build_source() {
+	_address="${user_name}@${_box}.physik.fu-berlin.de"
+	if [ "${_scratch}" -eq 1 ] ; then
+		_remote_basedir="${_address}:/local_scratch/${user_name}"
+	elif [ "${_home}" -eq 1 ] ; then
+		_remote_basedir="${_address}:/home/${user_name}"
+	else
+		_remote_basedir="${_address}:"
+	fi
+}
+
 fetch_data() {
-	_basedir='/home/alexanderm'
-	[ -n "$2" ] \
-		&& _source="alexanderm@malcha.physik.fu-berlin.de:$2" \
-		|| _source="alexanderm@malcha.physik.fu-berlin.de:${_basedir}/crosstalk/test"
-	[ -n "$3" ] \
-		&& _destination="$3" \
-		|| _destination="$HOME"/inbox/Hangar_SSH/"${_timestamp}"
+	if hostname --fqdn | grep 'physik.fu-berlin.de' ; then
+		# within uni network
+		if [ "${_opt_box}" -eq 0 ] ; then
+			printf "%s\n\n" "Specify hostname of source."
+			usage
+		else
+			build_source
+		fi
+	else
+		# remotely
+		build_source
+	fi
+	
+	if [ -n "$2" ] ; then
+		_source="${_remote_basedir}/$2"
+	else
+		printf "%s\n\n" "Provide a source directory."
+		usage
+	fi
+
+	if [ -n "$3" ] ; then
+		_destination="$3"
+	else
+		_destination="$HOME/Downloads/ssh_transfer_from_${_timestamp}"
+	fi
 
 	rsync -avzhP -e ssh "${_source}" "${_destination}"
+	# a -> archive mode
+	# v -> verbose mode
+	# z -> compress file data during transfer
+	# h -> human-readable format
+	# P -> --partial --progress: keep partially transferred files, show progress
 }
 
 send_data() {
+	# send from outside the uni
 	[ -n "$2" ] \
 		&& _source="$2" \
 		|| _source="$HOME"/crosstalk/test
@@ -30,7 +72,7 @@ send_data() {
 		&& _destination="$3" \
 		|| _destination="$HOME"/Cloud/fubox/masterarbeit/DataStaging/"${_timestamp}"
 
-	cp -Rv "${_source}" "${_destination}"
+	# send within the uni
 }
 
 usage() { cat << USAGE
@@ -43,7 +85,7 @@ USAGE
 
 while getopts b:sh arg; do
 	case ${arg} in
-		b) _box="${OPTARG}" ;;
+		b) _opt_box=1 && _box="${OPTARG}" ;;
 		s) _scratch=1 ;;
 		h) _home=1 ;;
 		*) usage
@@ -52,7 +94,14 @@ done
 shift $((OPTIND -1))
 
 case $1 in
-	f*) fetch_data "$@" ;;
-	s*) send_data "$@" ;;
-	*) usage
+f*)
+	check_input
+	fetch_data "$@"
+	;;
+s*)
+	check_input
+	send_data "$@"
+	;;
+*)
+	usage
 esac
