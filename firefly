@@ -1,9 +1,11 @@
 #!/bin/sh
 
+primary_box='malcha'
+user_name='alexanderm'
+
 _scratch=0
 _home=0
 
-primary_box='malcha'
 _box=${_box:-${primary_box}}
 
 _timestamp=$(date +%F-%H%M%S)
@@ -32,7 +34,7 @@ send_data() {
 }
 
 usage() { cat << USAGE
-${0##*/} - script for moving data between boxes.
+${0##*/} - A tool for moving data between boxes.
 usage: ${0##*/}	[-s] [-h] [-b hostname] command
 		source destination
 USAGE
