@@ -55,12 +55,7 @@ fetch_data() {
 		_destination="$HOME/Downloads/ssh_transfer_from_${_timestamp}"
 	fi
 
-	rsync -avzhP -e ssh "${_source}" "${_destination}"
-	# a -> archive mode
-	# v -> verbose mode
-	# z -> compress file data during transfer
-	# h -> human-readable format
-	# P -> --partial --progress: keep partially transferred files, show progress
+	transfer_data
 }
 
 send_data() {
@@ -73,6 +68,15 @@ send_data() {
 		|| _destination="$HOME"/Cloud/fubox/masterarbeit/DataStaging/"${_timestamp}"
 
 	# send within the uni
+}
+
+transfer_data() {
+	rsync -avzhP -e ssh "${_source}" "${_destination}"
+	# a -> archive mode
+	# v -> verbose mode
+	# z -> compress file data during transfer
+	# h -> human-readable format
+	# P -> --partial --progress: keep partially transferred files, show progress
 }
 
 usage() { cat << USAGE
