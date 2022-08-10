@@ -3,10 +3,11 @@
 primary_box='malcha'
 user_name='alexanderm'
 
-_scratch=0
+_debug=0
 _home=0
-_opt_box=0
+_scratch=0
 
+_opt_box=0
 _box=${_box:-${primary_box}}
 
 _timestamp=$(date +%F-%H%M%S)
@@ -15,6 +16,27 @@ check_input() {
 	[ "${_scratch}" -eq 1 ] && [ "${_home}" -eq 1 ] \
 		&& printf "%s\n\n" "Decide between scratch and home." \
 		&& usage
+}
+
+debug_output() {
+	printf "%s\n\n" "rsync -avzhP -e ssh ${_source} ${_destination}"
+
+	printf "%s\n" "\$_home: ${_home}"
+	printf "%s\n" "\$_scratch: ${_scratch}"
+	printf "%s\n\n" "\$_opt_box: ${_opt_box}"
+
+	printf "%s\n" "\$0: $0"
+	printf "%s\n" "\$1: $1"
+	printf "%s\n" "\$2: $2"
+	printf "%s\n\n" "\$3: $3"
+
+	printf "%s\n" "\$user_name: ${user_name}"
+	printf "%s\n\n" "\$_box: ${_box}"
+
+	printf "%s\n" "\$_address: ${_address}"
+	printf "%s\n" "\$_remote_basedir: ${_remote_basedir}"
+	printf "%s\n" "\$_source: ${_source}"
+	printf "%s\n" "\$_destination: ${_destination}"
 }
 
 build_remote() {
@@ -55,7 +77,11 @@ fetch_data() {
 		_destination="$HOME/Downloads/ssh_transfer_from_${_timestamp}"
 	fi
 
-	transfer_data
+	if [ "${_debug}" -eq 0 ] ; then
+		transfer_data
+	else
+		debug_output "$@"
+	fi
 }
 
 send_data() {
@@ -85,7 +111,11 @@ send_data() {
 		_destination="${_address}:/home/${user_name}/Downloads/ssh_transfer_from_${_timestamp}"
 	fi
 
-	transfer_data
+	if [ "${_debug}" -eq 0 ] ; then
+		transfer_data
+	else
+		debug_output "$@"
+	fi
 }
 
 transfer_data() {
@@ -99,17 +129,18 @@ transfer_data() {
 
 usage() { cat << USAGE
 ${0##*/} - A tool for moving data between boxes.
-usage: ${0##*/}	[-s] [-h] [-b hostname] command
+usage: ${0##*/}	[-d] [-h] [-s] [-b hostname] command
 		source destination
 USAGE
 	exit 1
 }
 
-while getopts b:sh arg; do
+while getopts b:dhs arg; do
 	case ${arg} in
 		b) _opt_box=1 && _box="${OPTARG}" ;;
-		s) _scratch=1 ;;
+		d) _debug=1 ;;
 		h) _home=1 ;;
+		s) _scratch=1 ;;
 		*) usage
 	esac
 done
