@@ -81,11 +81,7 @@ fetch_data() {
 		_destination="$HOME/Downloads/ssh_transfer_from_${_timestamp}"
 	fi
 
-	if [ "${_debug}" -eq 0 ] ; then
-		transfer_data
-	else
-		debug_output "$@"
-	fi
+	transfer_data "$@"
 }
 
 send_data() {
@@ -104,20 +100,20 @@ send_data() {
 		_destination="${_address}:/home/${user_name}/Downloads/ssh_transfer_from_${_timestamp}"
 	fi
 
-	if [ "${_debug}" -eq 0 ] ; then
-		transfer_data
-	else
-		debug_output "$@"
-	fi
+	transfer_data "$@"
 }
 
 transfer_data() {
-	rsync -avzhP -e ssh "${_source}" "${_destination}"
-	# a -> archive mode
-	# v -> verbose mode
-	# z -> compress file data during transfer
-	# h -> human-readable format
-	# P -> --partial --progress: keep partially transferred files, show progress
+	if [ "${_debug}" -eq 0 ] ; then
+		rsync -avzhP -e ssh "${_source}" "${_destination}"
+		# a -> archive mode
+		# v -> verbose mode
+		# z -> compress file data during transfer
+		# h -> human-readable format
+		# P -> --partial --progress: keep partially transferred files, show progress
+	else
+		debug_output "$@"
+	fi
 }
 
 usage() { cat << USAGE
