@@ -18,6 +18,21 @@ check_input() {
 		&& usage
 }
 
+check_uni() {
+	if hostname --fqdn | grep 'physik.fu-berlin.de' ; then
+		# within uni network
+		if [ "${_opt_box}" -eq 0 ] ; then
+			printf "%s\n\n" "You're in the uni network. Specify remote hostname."
+			usage
+		else
+			build_remote
+		fi
+	else
+		# remotely
+		build_remote
+	fi
+}
+
 debug_output() {
 	printf "%s\n\n" "rsync -avzhP -e ssh ${_source} ${_destination}"
 
@@ -51,19 +66,8 @@ build_remote() {
 }
 
 fetch_data() {
-	if hostname --fqdn | grep 'physik.fu-berlin.de' ; then
-		# within uni network
-		if [ "${_opt_box}" -eq 0 ] ; then
-			printf "%s\n\n" "Specify hostname of source."
-			usage
-		else
-			build_remote
-		fi
-	else
-		# remotely
-		build_remote
-	fi
-	
+	check_uni
+
 	if [ -n "$2" ] ; then
 		_source="${_remote_basedir}/$2"
 	else
@@ -85,18 +89,7 @@ fetch_data() {
 }
 
 send_data() {
-	if hostname --fqdn | grep 'physik.fu-berlin.de' ; then
-		# within uni network
-		if [ "${_opt_box}" -eq 0 ] ; then
-			printf "%s\n\n" "Specify hostname of destination."
-			usage
-		else
-			build_remote
-		fi
-	else
-		# remotely
-		build_remote
-	fi
+	check_uni
 
 	if [ -n "$2" ] ; then
 		_source="$2"
