@@ -10,11 +10,8 @@ Firefly is a tool to move data between boxes.
 
 ```shell
 $ firefly usage
-firefly - A tool for moving data between boxes.
-usage: firefly  [-s] [-h] [-b hostname] command
-                source destination
 ```
-Alternatively: RTFM.
+And for everything else RTFM.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
