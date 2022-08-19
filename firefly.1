@@ -1,0 +1,103 @@
+.\" Copyright (c) 2022 Alexander Möller <alexander.moeller@fu-berlin.de>
+.\"
+.\" Permission to use, copy, modify, and distribute this software for any
+.\" purpose with or without fee is hereby granted, provided that the above
+.\" copyright notice and this permission notice appear in all copies.
+.\"
+.\" THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+.\" WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+.\" MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+.\" ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+.\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+.\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+.\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+.\"
+.Dd $Mdocdate: August 19 2022 $
+.Dt FIREFLY 1
+.Os
+.Sh NAME
+.Nm firefly
+.Nd A tool to move data between boxes.
+.Sh SYNOPSIS
+.Nm firefly
+.Op Fl b hostname
+.Op Fl d
+.Op Fl h
+.Op Fl s
+.Op command
+.Sh DESCRIPTION
+.Nm
+is a simple tool to move data between boxes utilising
+.Xr rsync 1
+and
+.Xr ssh 1 .
+.Pp
+The options are as follows:
+.Bl -tag -width Ds
+.It Fl b Ar hostname
+Allows to specify a remote hostname.
+.It Fl d
+Don't move any data, just provide debug output.
+.It Fl h
+Use the user's home directory as the remote base directory.
+.It Fl s
+Use the local scratch as the remote base directory.
+.El
+.Pp
+The following commands are available:
+.Bl -tag -width Ds
+.It Cm fetch Ar source Ar destination
+Fetch data from some source and copy it to some destination.
+.It Cm send Ar source Ar destination
+Send data from some source and copy it to some destination.
+.It Cm usage
+Show a short usage guide.
+.El
+.Sh NOTES
+The commands only depend on the first letter. So instead of using
+.Bd -literal -offset indent
+$ firefly send source destination
+.Ed
+.Pp
+it is also possible to use
+.Bd -literal -offset indent
+$ firefly s source destination
+.Ed
+.Pp
+When using this within the university network, using the -b flag becomes compulsory as opposed to a situation in which
+.Nm
+is used from a home computer.
+.Nm
+will abort when a hostname is needed but not provided.
+.Ed
+When no hostname is provided,
+.Nm
+defaults back to malcha.
+.Ed
+For now
+.Nm
+also only supports a hardcoded user_name.
+.Ed
+If no destination PATH is provided,
+.Nm
+will default to HOME/Downloads/ssh_transfer_from_(date +%F-%H%M%S) according to
+.Xr strftime 3 .
+.El
+.Sh EXAMPLES
+Fetch directory plots-population from /local_scratch/alexanderm/ on rehavia:
+.Bd -literal -offset indent
+$ firefly fetch -b rehavia -s plots-population
+.Ed
+.Pp
+An equivalent possibility would be
+.Bd -literal -offset indent
+$ firefly fetch -b rehavia -s /local_scratch/alexanderm/plots-population
+.Ed
+.Pp
+.Sh SEE ALSO
+.Xr rsync 1 ,
+.Xr ssh 1 ,
+.Sh AUTHOR
+.Nm
+was written by
+.An Alexander Möller Aq Mt alexander.moeller@fu-berlin.de .
