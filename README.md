@@ -14,6 +14,7 @@ firefly - A tool for moving data between boxes.
 usage: firefly  [-s] [-h] [-b hostname] command
                 source destination
 ```
+Alternatively: RTFM.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
