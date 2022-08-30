@@ -12,7 +12,7 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd $Mdocdate: August 30 2022 $
+.Dd $Mdocdate: August 31 2022 $
 .Dt FIREFLY 1
 .Os
 .Sh NAME
@@ -22,7 +22,7 @@
 .Nm firefly
 .Op Fl d
 .Op Fl h
-.Op Fl s
+.Op Fl l
 .Op Fl b Ar hostname
 .Op command
 .Sh DESCRIPTION
@@ -40,7 +40,7 @@ Allows to specify a remote hostname.
 Don't transfer any data, just provide debug output.
 .It Fl h
 Use the user's home directory as the remote base directory.
-.It Fl s
+.It Fl l
 Use the local scratch as the remote base directory.
 .El
 .Pp
@@ -67,6 +67,7 @@ $ firefly s source destination
 When using this within the university network, using the -b flag becomes compulsory as opposed to a situation in which
 .Nm
 is used from a home computer.
+.Ed
 .Nm
 will abort when a hostname is needed but not provided.
 .Ed
@@ -86,12 +87,12 @@ will default to HOME/Downloads/ssh_transfer_from_(date +%F-%H%M%S) according to
 .Sh EXAMPLES
 Fetch directory plots-population from /local_scratch/alexanderm/ on rehavia:
 .Bd -literal -offset indent
-$ firefly fetch -b rehavia -s plots-population
+$ firefly fetch -b rehavia -l plots-population
 .Ed
 .Pp
 An equivalent possibility would be
 .Bd -literal -offset indent
-$ firefly fetch -b rehavia -s /local_scratch/alexanderm/plots-population
+$ firefly fetch -b rehavia /local_scratch/alexanderm/plots-population
 .Ed
 .Pp
 .Sh SEE ALSO

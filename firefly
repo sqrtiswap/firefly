@@ -19,7 +19,7 @@ user_name='alexanderm'
 
 _debug=0
 _home=0
-_scratch=0
+_local_scratch=0
 
 _opt_box=0
 _box=${_box:-${primary_box}}
@@ -27,8 +27,8 @@ _box=${_box:-${primary_box}}
 _timestamp=$(date +%F-%H%M%S)
 
 check_input() {
-	[ "${_scratch}" -eq 1 ] && [ "${_home}" -eq 1 ] \
-		&& printf "%s\n\n" "Decide between scratch and home." \
+	[ "${_local_scratch}" -eq 1 ] && [ "${_home}" -eq 1 ] \
+		&& printf "%s\n\n" "Decide between local scratch and home." \
 		&& usage
 }
 
@@ -51,7 +51,7 @@ debug_output() {
 	printf "%s\n\n" "rsync -avzhP -e ssh ${_source} ${_destination}"
 
 	printf "%s\n" "\$_home: ${_home}"
-	printf "%s\n" "\$_scratch: ${_scratch}"
+	printf "%s\n" "\$_local_scratch: ${_local_scratch}"
 	printf "%s\n\n" "\$_opt_box: ${_opt_box}"
 
 	printf "%s\n" "\$0: $0"
@@ -70,7 +70,7 @@ debug_output() {
 
 build_remote() {
 	_address="${user_name}@${_box}.physik.fu-berlin.de"
-	if [ "${_scratch}" -eq 1 ] ; then
+	if [ "${_local_scratch}" -eq 1 ] ; then
 		_remote_basedir="${_address}:/local_scratch/${user_name}"
 	elif [ "${_home}" -eq 1 ] ; then
 		_remote_basedir="${_address}:/home/${user_name}"
@@ -132,18 +132,18 @@ transfer_data() {
 
 usage() { cat << USAGE
 ${0##*/} - A tool to transfer data between boxes.
-usage: ${0##*/}	[-d] [-h] [-s] [-b hostname] command
+usage: ${0##*/}	[-d] [-h] [-l] [-b hostname] command
 		source destination
 USAGE
 	exit 1
 }
 
-while getopts b:dhs arg; do
+while getopts b:dhl arg; do
 	case ${arg} in
 		b) _opt_box=1 && _box="${OPTARG}" ;;
 		d) _debug=1 ;;
 		h) _home=1 ;;
-		s) _scratch=1 ;;
+		l) _local_scratch=1 ;;
 		*) usage
 	esac
 done
