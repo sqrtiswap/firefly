@@ -4,7 +4,7 @@
 >
 > -Corbin (Firefly, Episode 6 "Our Mrs. Reynolds")
 
-Firefly is a tool to move data between boxes.
+Firefly is a simple tool to transfer data between boxes.
 
 ## Usage
 

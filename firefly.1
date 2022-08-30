@@ -12,12 +12,12 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd $Mdocdate: August 19 2022 $
+.Dd $Mdocdate: August 30 2022 $
 .Dt FIREFLY 1
 .Os
 .Sh NAME
 .Nm firefly
-.Nd A tool to move data between boxes.
+.Nd A tool to transfer data between boxes.
 .Sh SYNOPSIS
 .Nm firefly
 .Op Fl d
@@ -27,7 +27,7 @@
 .Op command
 .Sh DESCRIPTION
 .Nm
-is a simple tool to move data between boxes utilising
+is a simple tool to transfer data between boxes utilising
 .Xr rsync 1
 and
 .Xr ssh 1 .
@@ -37,7 +37,7 @@ The options are as follows:
 .It Fl b Ar hostname
 Allows to specify a remote hostname.
 .It Fl d
-Don't move any data, just provide debug output.
+Don't transfer any data, just provide debug output.
 .It Fl h
 Use the user's home directory as the remote base directory.
 .It Fl s
@@ -96,7 +96,7 @@ $ firefly fetch -b rehavia -s /local_scratch/alexanderm/plots-population
 .Pp
 .Sh SEE ALSO
 .Xr rsync 1 ,
-.Xr ssh 1 ,
+.Xr ssh 1
 .Sh AUTHOR
 .Nm
 was written by
