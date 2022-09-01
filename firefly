@@ -15,7 +15,7 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 primary_box='malcha'
-primary_user='alexanderm'
+primary_user=$(whoami)
 
 _debug=0
 _home=0
