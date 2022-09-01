@@ -15,7 +15,7 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 primary_box='malcha'
-user_name='alexanderm'
+primary_user='alexanderm'
 
 _debug=0
 _home=0
@@ -23,6 +23,7 @@ _local_scratch=0
 
 _opt_box=0
 _box=${_box:-${primary_box}}
+_user_name=${_user_name:-${primary_user}}
 
 _timestamp=$(date +%F-%H%M%S)
 
@@ -59,7 +60,7 @@ debug_output() {
 	printf "%s\n" "\$2: $2"
 	printf "%s\n\n" "\$3: $3"
 
-	printf "%s\n" "\$user_name: ${user_name}"
+	printf "%s\n" "\$_user_name: ${_user_name}"
 	printf "%s\n\n" "\$_box: ${_box}"
 
 	printf "%s\n" "\$_address: ${_address}"
@@ -69,11 +70,11 @@ debug_output() {
 }
 
 build_remote() {
-	_address="${user_name}@${_box}.physik.fu-berlin.de"
+	_address="${_user_name}@${_box}.physik.fu-berlin.de"
 	if [ "${_local_scratch}" -eq 1 ] ; then
-		_remote_basedir="${_address}:/local_scratch/${user_name}"
+		_remote_basedir="${_address}:/local_scratch/${_user_name}"
 	elif [ "${_home}" -eq 1 ] ; then
-		_remote_basedir="${_address}:/home/${user_name}"
+		_remote_basedir="${_address}:/home/${_user_name}"
 	else
 		_remote_basedir="${_address}:"
 	fi
@@ -111,7 +112,7 @@ send_data() {
 	if [ -n "$3" ] ; then
 		_destination="${_remote_basedir}/$3"
 	else
-		_destination="${_address}:/home/${user_name}/Downloads/ssh_transfer_from_${_timestamp}"
+		_destination="${_address}:/home/${_user_name}/Downloads/ssh_transfer_from_${_timestamp}"
 	fi
 
 	transfer_data "$@"
@@ -138,12 +139,13 @@ USAGE
 	exit 1
 }
 
-while getopts b:dhl arg; do
+while getopts b:u:dhl arg; do
 	case ${arg} in
 		b) _opt_box=1 && _box="${OPTARG}" ;;
 		d) _debug=1 ;;
 		h) _home=1 ;;
 		l) _local_scratch=1 ;;
+		u) _user_name="${OPTARG}" ;;
 		*) usage
 	esac
 done
