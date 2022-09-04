@@ -44,7 +44,22 @@ check_uni() {
 		fi
 	else
 		# remotely
-		build_remote
+		if [ "${_user_name}" = "${primary_user}" ] ; then
+			printf "\033[31mRemote username is %s\033[0m. Are you sure about that? [y/n] " "${_user_name}"
+			IFS= read -r _continue
+			if [ "${_continue}" = "y" ] ; then
+				build_remote
+			elif [ "${_continue}" = "n" ] ; then
+				printf "Which username do you want to use? "
+				IFS= read -r _user_name
+				build_remote
+			else
+				printf "Unknown option.\n"
+				check_uni
+			fi
+		else
+			build_remote
+		fi
 	fi
 }
 
