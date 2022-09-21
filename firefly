@@ -17,6 +17,7 @@
 primary_box='malcha'
 primary_user=$(whoami)
 
+_check=0
 _debug=0
 _home=0
 _local_scratch=0
@@ -64,24 +65,28 @@ check_uni() {
 }
 
 debug_output() {
-	printf "%s\n\n" "rsync -avzhP -e ssh ${_source} ${_destination}"
+	if [ "${_check}" -eq 1 ] ; then
+		printf "%s\n" "rsync -avzhP -e ssh ${_source} ${_destination}"
+	else
+		printf "%s\n\n" "rsync -avzhP -e ssh ${_source} ${_destination}"
 
-	printf "%s\n" "\$_home: ${_home}"
-	printf "%s\n" "\$_local_scratch: ${_local_scratch}"
-	printf "%s\n\n" "\$_opt_box: ${_opt_box}"
+		printf "%s\n" "\$_home: ${_home}"
+		printf "%s\n" "\$_local_scratch: ${_local_scratch}"
+		printf "%s\n\n" "\$_opt_box: ${_opt_box}"
 
-	printf "%s\n" "\$0: $0"
-	printf "%s\n" "\$1: $1"
-	printf "%s\n" "\$2: $2"
-	printf "%s\n\n" "\$3: $3"
+		printf "%s\n" "\$0: $0"
+		printf "%s\n" "\$1: $1"
+		printf "%s\n" "\$2: $2"
+		printf "%s\n\n" "\$3: $3"
 
-	printf "%s\n" "\$_user_name: ${_user_name}"
-	printf "%s\n\n" "\$_box: ${_box}"
+		printf "%s\n" "\$_user_name: ${_user_name}"
+		printf "%s\n\n" "\$_box: ${_box}"
 
-	printf "%s\n" "\$_address: ${_address}"
-	printf "%s\n" "\$_remote_basedir: ${_remote_basedir}"
-	printf "%s\n" "\$_source: ${_source}"
-	printf "%s\n" "\$_destination: ${_destination}"
+		printf "%s\n" "\$_address: ${_address}"
+		printf "%s\n" "\$_remote_basedir: ${_remote_basedir}"
+		printf "%s\n" "\$_source: ${_source}"
+		printf "%s\n" "\$_destination: ${_destination}"
+	fi
 }
 
 build_remote() {
@@ -134,29 +139,42 @@ send_data() {
 }
 
 transfer_data() {
-	if [ "${_debug}" -eq 0 ] ; then
+	if [ "${_debug}" -eq 1 ] ; then
+		debug_output "$@"
+	elif [ "${_check}" -eq 1 ] ; then
+		debug_output "$@"
+		printf '%s' "Apply? [y/n] "
+		IFS= read -r _apply
+		if [ "${_apply}" = "y" ] ; then
+			_check=0 && _debug=0 && transfer_data "$@"
+		elif [ "${_apply}" = "n" ] ; then
+			exit 0
+		else
+			printf "Unknown option."
+			_check=1 && transfer_data "$@"
+		fi
+	else
 		rsync -avzhP -e ssh "${_source}" "${_destination}"
 		# a -> archive mode
 		# v -> verbose mode
 		# z -> compress file data during transfer
 		# h -> human-readable format
 		# P -> --partial --progress: keep partially transferred files, show progress
-	else
-		debug_output "$@"
 	fi
 }
 
 usage() { cat << USAGE
 ${0##*/} - A tool to transfer data between boxes.
-usage: ${0##*/}	[-d] [-h] [-l] [-b hostname] command
+usage: ${0##*/}	[-c] [-d] [-h] [-l] [-b hostname] [-u username] command
 		source destination
 USAGE
 	exit 1
 }
 
-while getopts b:u:dhl arg; do
+while getopts b:u:cdhl arg; do
 	case ${arg} in
 		b) _opt_box=1 && _box="${OPTARG}" ;;
+		c) _check=1 ;;
 		d) _debug=1 ;;
 		h) _home=1 ;;
 		l) _local_scratch=1 ;;

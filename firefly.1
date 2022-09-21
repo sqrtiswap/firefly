@@ -12,7 +12,7 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd $Mdocdate: September 01 2022 $
+.Dd $Mdocdate: September 21 2022 $
 .Dt FIREFLY 1
 .Os
 .Sh NAME
@@ -21,6 +21,7 @@
 .Sh SYNOPSIS
 .Nm firefly
 .Op Fl b Ar hostname
+.Op Fl c
 .Op Fl d
 .Op Fl h
 .Op Fl l
@@ -37,6 +38,8 @@ The options are as follows:
 .Bl -tag -width Ds
 .It Fl b Ar hostname
 Allows to specify a remote hostname.
+.It Fl c
+Ask for confirmation before running command.
 .It Fl d
 Don't transfer any data, just provide debug output.
 .It Fl h
