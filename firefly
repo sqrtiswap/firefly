@@ -169,7 +169,7 @@ transfer_data() {
 
 usage() { cat << USAGE
 ${0##*/} - A tool to transfer data between boxes.
-usage: ${0##*/}	[-c] [-d] [-h] [-l] [-b hostname] [-u username] command
+usage: ${0##*/}	[-c] [-d] [-h] [-l] [-t] [-b hostname] [-u username] command
 		source destination
 USAGE
 	exit 1
