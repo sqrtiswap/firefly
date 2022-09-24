@@ -19,6 +19,8 @@ primary_user=$(whoami)
 
 _check=0
 _debug=0
+_interactive=0
+
 _home=0
 _local_scratch=0
 _tron_scratch=0
@@ -91,6 +93,55 @@ debug_output() {
 	fi
 }
 
+build_interactively() {
+	printf '%s' "Choose a remote username: "
+	IFS= read -r _user_name
+	printf '%s' "Choose a remote basedir:[h(ome), l(ocal scratch), t(ron) scratch] "
+	IFS= read -r _base
+	if [ "${_base}" = "h" ] ; then
+		_home=1
+		printf '%s' "Choose a remote hostname: "
+		IFS= read -r _box
+	elif [ "${_base}" = "l" ] ; then
+		_local_scratch=1
+		printf '%s' "Choose a remote hostname: "
+		IFS= read -r _box
+	elif [ "${_base}" = "t" ] ; then
+		_tron_scratch=1
+		_box='tron'
+	else
+		printf '%s\n' "No remote basedir provided. You need to later specify the full PATH."
+	fi
+	build_remote
+
+	printf '%s' "Choose PATH of data to transfer: "
+	IFS= read -r _data_dir
+	printf '%s' "Choose destination PATH or leave blank for automatic name: "
+	IFS= read -r _dest_dir
+
+	case $1 in
+		fetch)
+			_source="${_remote_basedir}/${_data_dir}"
+			if [ -n "${_dest_dir}" ] ; then
+				_destination="${_dest_dir}"
+			else
+				_destination="$HOME/Downloads/ssh_transfer_from_${_timestamp}"
+			fi
+			;;
+		send)
+			_source="${_data_dir}"
+			if [ -n "${_dest_dir}" ] ; then
+				_destination="${_remote_basedir}/${_dest_dir}"
+			else
+				_destination="${_address}:/home/${_user_name}/Downloads/ssh_transfer_from_${_timestamp}"
+			fi
+			;;
+		*) usage
+	esac
+
+	transfer_data
+}
+
 build_remote() {
 	_address="${_user_name}@${_box}.physik.fu-berlin.de"
 	if [ "${_local_scratch}" -eq 1 ] ; then
@@ -105,7 +156,11 @@ build_remote() {
 }
 
 fetch_data() {
-	check_uni
+	if [ "${_interactive}" -eq 0 ] ; then
+		check_uni
+	else
+		build_interactively 'fetch'
+	fi
 
 	if [ -n "$2" ] ; then
 		_source="${_remote_basedir}/$2"
@@ -124,7 +179,11 @@ fetch_data() {
 }
 
 send_data() {
-	check_uni
+	if [ "${_interactive}" -eq 0 ] ; then
+		check_uni
+	else
+		build_interactively 'send'
+	fi
 
 	if [ -n "$2" ] ; then
 		_source="$2"
@@ -169,18 +228,19 @@ transfer_data() {
 
 usage() { cat << USAGE
 ${0##*/} - A tool to transfer data between boxes.
-usage: ${0##*/}	[-c] [-d] [-h] [-l] [-t] [-b hostname] [-u username] command
+usage: ${0##*/}	[-c] [-d] [-h] [-i] [-l] [-t] [-b hostname] [-u username] command
 		source destination
 USAGE
 	exit 1
 }
 
-while getopts b:u:cdhlt arg; do
+while getopts b:u:cdhilt arg; do
 	case ${arg} in
 		b) _opt_box=1 && _box="${OPTARG}" ;;
 		c) _check=1 ;;
 		d) _debug=1 ;;
 		h) _home=1 ;;
+		i) _interactive=1 ;;
 		l) _local_scratch=1 ;;
 		t) _tron_scratch=1 && _box="tron" ;;
 		u) _user_name="${OPTARG}" ;;
