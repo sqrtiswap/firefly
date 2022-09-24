@@ -21,6 +21,7 @@ _check=0
 _debug=0
 _home=0
 _local_scratch=0
+_tron_scratch=0
 
 _opt_box=0
 _box=${_box:-${primary_box}}
@@ -95,6 +96,8 @@ build_remote() {
 		_remote_basedir="${_address}:/local_scratch/${_user_name}"
 	elif [ "${_home}" -eq 1 ] ; then
 		_remote_basedir="${_address}:/home/${_user_name}"
+	elif [ "${_tron_scratch}" -eq 1 ] ; then
+		_remote_basedir="${_address}:/scratch/${_user_name}"
 	else
 		_remote_basedir="${_address}:"
 	fi
@@ -171,13 +174,14 @@ USAGE
 	exit 1
 }
 
-while getopts b:u:cdhl arg; do
+while getopts b:u:cdhlt arg; do
 	case ${arg} in
 		b) _opt_box=1 && _box="${OPTARG}" ;;
 		c) _check=1 ;;
 		d) _debug=1 ;;
 		h) _home=1 ;;
 		l) _local_scratch=1 ;;
+		t) _tron_scratch=1 && _box="tron" ;;
 		u) _user_name="${OPTARG}" ;;
 		*) usage
 	esac
