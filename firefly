@@ -30,8 +30,9 @@ _user_name=${_user_name:-${primary_user}}
 _timestamp=$(date +%F-%H%M%S)
 
 check_input() {
-	[ "${_local_scratch}" -eq 1 ] && [ "${_home}" -eq 1 ] \
-		&& printf "%s\n\n" "Decide between local scratch and home." \
+	_basedir_sum=$((_home + _local_scratch + _tron_scratch))
+	[ "${_basedir_sum}" -gt 1 ] \
+		&& printf "%s\n%s\n\n" "You specified more than one base directory." "Choose at most one of -h, -l, -t" \
 		&& usage
 }
 
