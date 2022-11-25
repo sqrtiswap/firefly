@@ -39,7 +39,7 @@ check_input() {
 }
 
 check_uni() {
-	if hostname --fqdn | grep 'physik.fu-berlin.de' ; then
+	if [ "$(dnsdomainname 2> /dev/null)" = 'physik.fu-berlin.de' ] ; then
 		# within uni network
 		if [ "${_opt_box}" -eq 0 ] ; then
 			printf "%s\n\n" "You're in the uni network. Specify remote hostname."
