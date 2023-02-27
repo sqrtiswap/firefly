@@ -14,12 +14,16 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
+[ -n "$FIREFLY_PRIMARY_BOX" ] \
+	&& primary_box="$FIREFLY_PRIMARY_BOX"
+
+[ -n "$FIREFLY_PRIMARY_USER" ] \
+	&& primary_user="$FIREFLY_PRIMARY_USER" \
+	|| primary_user=$(whoami)
+
 _rset="\033[0m"  # reset
 _good="\033[32m" # green
 _fail="\033[31m" # red
-
-primary_box='malcha'
-primary_user=$(whoami)
 
 _check=0
 _debug=0
@@ -40,6 +44,9 @@ check_input() {
 	[ "${_basedir_sum}" -gt 1 ] \
 		&& printf "${_fail}%s\n%s${_rset}\n\n" "You specified more than one base directory." "Choose at most one of -h, -l, -t" \
 		&& usage
+	[ -z "${_box}" ] \
+		&& printf "${_fail}%s${_rset}\n\n" "You didn't specify a box." \
+		&& usage
 }
 
 check_uni() {
@@ -53,7 +60,9 @@ check_uni() {
 		fi
 	else
 		# remotely
-		if [ "${_user_name}" = "${primary_user}" ] ; then
+		if [ "${_user_name}" = "$FIREFLY_PRIMARY_USER" ] ; then
+			build_remote
+		elif [ "${_user_name}" = "${primary_user}" ] ; then
 			printf "\033[31mRemote username is %s\033[0m. Are you sure about that? [y/n] " "${_user_name}"
 			IFS= read -r _continue
 			if [ "${_continue}" = "y" ] ; then
@@ -88,7 +97,11 @@ debug_output() {
 		printf "%s\n\n" "\$3: $3"
 
 		printf "%s\n" "\$_user_name: ${_user_name}"
-		printf "%s\n\n" "\$_box: ${_box}"
+		printf "%s\n" "\$FIREFLY_PRIMARY_USER: $FIREFLY_PRIMARY_USER"
+		printf "%s\n" "\$primary_user: ${primary_user}"
+		printf "%s\n" "\$_box: ${_box}"
+		printf "%s\n" "\$FIREFLY_PRIMARY_BOX: $FIREFLY_PRIMARY_BOX"
+		printf "%s\n\n" "\$primary_box: ${primary_box}"
 
 		printf "%s\n" "\$_address: ${_address}"
 		printf "%s\n" "\$_remote_basedir: ${_remote_basedir}"

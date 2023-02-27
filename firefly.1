@@ -12,7 +12,7 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd $Mdocdate: September 24 2022 $
+.Dd $Mdocdate: February 27 2023 $
 .Dt FIREFLY 1
 .Os
 .Sh NAME
@@ -65,6 +65,13 @@ Send data from some source and copy it to some destination.
 .It Cm usage
 Show a short usage guide.
 .El
+.Sh ENVIRONMENT VARIABLES
+.Bl -tag -width 20n -compact
+.It Pa FIREFLY_PRIMARY_BOX
+Specify a remote box that is usually used.
+.It Pa FIREFLY_PRIMARY_USER
+Specify a remote user name that is usually used.
+.El
 .Sh NOTES
 The commands only depend on the first letter. So instead of using
 .Bd -literal -offset indent
@@ -76,24 +83,21 @@ it is also possible to use
 $ firefly s source destination
 .Ed
 .Pp
-When using this within the university network, using the -b flag becomes compulsory as opposed to a situation in which
+When
 .Nm
-is used from a home computer.
+is used from within the university network, the -b flag becomes compulsory as opposed to when connecting from the outside.
 .Ed
+.Pp
 .Nm
 will abort when a hostname is needed but not provided.
 .Ed
-When no hostname is provided,
-.Nm
-defaults back to malcha.
+.Pp
+When no user name is provided, you will be prompted if you want to use your current user name.
 .Ed
-For now
-.Nm
-also only supports a hardcoded user_name.
-.Ed
+.Pp
 If no destination PATH is provided,
 .Nm
-will default to HOME/Downloads/ssh_transfer_from_(date +%F-%H%M%S) according to
+will default to $HOME/Downloads/ssh_transfer_from_(date +%F-%H%M%S) according to
 .Xr strftime 3 .
 .El
 .Sh EXAMPLES
