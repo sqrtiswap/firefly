@@ -3,11 +3,11 @@
 all: install doc
 
 doc:
-	mkdir -p ~/man/man1
+	@mkdir -p ~/man/man1
 	cp -f firefly.1 ~/man/man1/firefly.1
 
 install:
-	mkdir -p ~/bin/
+	@mkdir -p ~/bin/
 	cp -f firefly ~/bin/firefly
 
 uninstall:
