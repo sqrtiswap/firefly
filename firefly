@@ -234,7 +234,7 @@ transfer_data() {
 			_check=1 && transfer_data "$@"
 		fi
 	else
-		rsync -avzhP -e ssh "${_source}" "${_destination}" && printf "${_good}Transfer completed.${_rset}\n"
+		rsync -avzhP -e ssh "${_source}" "${_destination}" && printf "${_good}%s${_rset}\n" "Transfer completed."
 		# a -> archive mode
 		# v -> verbose mode
 		# z -> compress file data during transfer
