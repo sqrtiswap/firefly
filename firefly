@@ -102,7 +102,8 @@ debug_output() {
 		printf "%s\n" "\$primary_user: ${primary_user}"
 		printf "%s\n" "\$_box: ${_box}"
 		printf "%s\n" "\$FIREFLY_PRIMARY_BOX: $FIREFLY_PRIMARY_BOX"
-		printf "%s\n\n" "\$primary_box: ${primary_box}"
+		printf "%s\n" "\$primary_box: ${primary_box}"
+		printf "%s\n\n" "\$_public_key: ${_public_key}"
 
 		printf "%s\n" "\$_address: ${_address}"
 		printf "%s\n" "\$_remote_basedir: ${_remote_basedir}"
@@ -252,7 +253,7 @@ transfer_data() {
 
 usage() { cat << USAGE
 ${0##*/} - A tool to transfer data between boxes.
-usage: ${0##*/}	[-c] [-d] [-h] [-i] [-l] [-t] [-b hostname] [-u username] command
+usage: ${0##*/}	[-c] [-d] [-h] [-i] [k] [-l] [-t] [-b hostname] [-k key] [-u username] command
 		source destination
 USAGE
 	exit 1
