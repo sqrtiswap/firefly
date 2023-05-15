@@ -82,11 +82,12 @@ check_uni() {
 }
 
 debug_output() {
-	if [ "${_check}" -eq 1 ] ; then
-		printf "%s\n" "rsync -avzhP -e ssh ${_source} ${_destination}"
+	if [ -n "${_public_key}" ] ; then
+		printf "%s\n" "rsync -avzhP -e \"ssh -i ${_public_key}\" ${_source} ${_destination}"
 	else
-		printf "%s\n\n" "rsync -avzhP -e ssh ${_source} ${_destination}"
-
+		printf "%s\n" "rsync -avzhP -e ssh ${_source} ${_destination}"
+	fi
+	if [ "${_check}" -eq 0 ] ; then
 		printf "%s\n" "\$_home: ${_home}"
 		printf "%s\n" "\$_local_scratch: ${_local_scratch}"
 		printf "%s\n\n" "\$_opt_box: ${_opt_box}"
@@ -234,7 +235,13 @@ transfer_data() {
 			_check=1 && transfer_data "$@"
 		fi
 	else
-		rsync -avzhP -e ssh "${_source}" "${_destination}" && printf "${_good}%s${_rset}\n" "Transfer completed."
+		if [ -n "${_public_key}" ] ; then
+			rsync -avzhP -e "ssh -i ${_public_key}" "${_source}" "${_destination}" \
+				&& printf "${_good}%s${_rset}\n" "Transfer completed."
+		else
+			rsync -avzhP -e ssh "${_source}" "${_destination}" \
+				&& printf "${_good}%s${_rset}\n" "Transfer completed."
+		fi
 		# a -> archive mode
 		# v -> verbose mode
 		# z -> compress file data during transfer
@@ -251,13 +258,14 @@ USAGE
 	exit 1
 }
 
-while getopts b:u:cdhilt arg; do
+while getopts b:k:u:cdhilt arg; do
 	case ${arg} in
 		b) _opt_box=1 && _box="${OPTARG}" ;;
 		c) _check=1 ;;
 		d) _debug=1 ;;
 		h) _home=1 ;;
 		i) _interactive=1 ;;
+		k) _public_key="${OPTARG}" ;;
 		l) _local_scratch=1 ;;
 		t) _tron_scratch=1 && _box="tron" ;;
 		u) _user_name="${OPTARG}" ;;
